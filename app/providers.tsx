@@ -1,9 +1,8 @@
 "use client";
 
 import { type ReactNode } from "react";
-import { base, baseSepolia } from "wagmi/chains";
+import { baseSepolia } from "wagmi/chains";
 import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
-import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   WagmiProvider,
@@ -25,7 +24,7 @@ export function Providers(props: { children: ReactNode }) {
         preference: process.env.NEXT_PUBLIC_ONCHAINKIT_WALLET_CONFIG as
           | "smartWalletOnly"
           | "all",
-        // @ts-ignore
+        // @ts-expect-error because wagmi types are not updated yet
         keysUrl: "https://keys-dev.coinbase.com/connect",
       }),
     ],

@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { WalletConnection } from "./WalletConnection";
 import { useSmartContract } from "../components/hooks/useSmartContract";
 import { useAccount } from "wagmi";
-import { downloadFile } from "../../lib/download"; // Adjust the import path as needed
 type BingoSquare = {
   text: string;
   marked: boolean;
@@ -20,9 +19,7 @@ export function BingoGame() {
   const [isBingo, setIsBingo] = useState(false);
   const [animatingElements, setAnimatingElements] = useState<string[]>([]);
   const [pulsingSquares, setPulsingSquares] = useState<string[]>([]);
-  const [contractGrid, setContractGrid] = useState<BingoGrid | null>(null);
-  const [proxyNftUrl, setProxyNftUrl] = useState<string | null>(null);
-
+  
   const { address, isConnected } = useAccount();
   const {
     markSquareOnContract,
@@ -31,7 +28,6 @@ export function BingoGame() {
     setGrid,
     getFormattedGrid,
     isMemberError,
-    isUserGridError,
     nftUrl
   } = useSmartContract();
 
@@ -54,17 +50,7 @@ export function BingoGame() {
       console.warn("Grid is empty or not initialized");
     }
 
-    if(nftUrl) {
-      console.log("NFT URL:", nftUrl);
-      const parts = nftUrl.split("/ipfs/");
-      const imageCid = parts[1];
-      console.log("Image CID:", imageCid);
-
-      // Replace these with your CID and desired output path:
-      const OUTPUT_PATH = "./public/images/nfts/badge.png";
-
-      downloadFile(imageCid, OUTPUT_PATH);
-    }
+   
   
    
   }, [grid])
@@ -295,9 +281,25 @@ export function BingoGame() {
                 <p className="text-green-400 font-semibold">
                   🔗 Connected to Base Network
                 </p>
-                <p className="text-white/80 text-sm mt-1">
-                  Your Bingo progress is now saved on-chain!
-                </p>
+                {nftUrl ? (
+                  <p className="text-white/80 text-sm mt-1">
+                    You can view your Bingo DNFT on Opensea{" "}
+                    <a
+                      href={"https://testnets.opensea.io/account"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      here
+                    </a>
+                  </p>
+                ) : (
+                  <p className="text-white/80 text-sm mt-1">
+                    Your Bingo progress is now saved on-chain!
+                    <br />
+                    Complete your Bingo card to mint your DNFT.
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -337,7 +339,7 @@ export function BingoGame() {
               </div>
             </div>
             <p className="text-2xl text-white font-semibold mt-4 animate-pulse">
-              Congratulations! You've achieved BINGO!
+              Congratulations! You&rsquo;ve achieved BINGO!
             </p>
           </div>
         )}
@@ -400,17 +402,6 @@ export function BingoGame() {
                   completedDiagonals.length}
               </div>
             </div>
-            {proxyNftUrl && (
-              <div className="mt-4 pt-4 border-t border-white/20">
-                <div className="bg-green-300 w-48 h-48">
-                  <img
-                    src="/images/nfts/badge.png"
-                    alt="metadata"
-                    className="object-cover h-full w-full"
-                  />
-                </div>
-              </div>
-            )}
           </div>
         </div>
         {/* Game Controls */}

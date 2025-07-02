@@ -24,7 +24,7 @@ export default function Subscribe() {
   const { connectAsync } = useConnect();
   const connectors = useConnectors();
 
-  const { data, error, isLoading, refetch } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ["collectSubscription"],
     queryFn: handleCollectSubscription,
     refetchOnWindowFocus: false,
@@ -97,6 +97,7 @@ export default function Subscribe() {
     
     let data;
     try {
+      // @ts-ignore
       const replacer = (key: string, value: any) => {
         if (typeof value === "bigint") {
           return value.toString();
@@ -154,10 +155,10 @@ export default function Subscribe() {
               className={cn(
                 text.headline,
                 color.inverse,
-                "flex justify-center",
+                "flex justify-center text-xs",
               )}
             >
-              Subscribe
+              Subscribe For Spend Permission
             </span>
           </button>
         </div>

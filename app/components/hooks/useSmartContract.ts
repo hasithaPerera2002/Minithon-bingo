@@ -1,13 +1,10 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useWriteContract, useReadContract, Config, useAccount } from "wagmi";
 import BingoABI from "../../../lib/abi/Bingo.json";
 import toast from "react-hot-toast";
 import React from "react";
-import { Address } from "@coinbase/onchainkit/identity";
-import { get } from "http";
-import { log } from "util";
 
 type BingoSquare = {
   text: string;
@@ -54,7 +51,6 @@ export function useSmartContract() {
   const {
     data: userGrid,
     refetch: refetchUserGrid,
-    error: errorLoadingUserGrid,
     isError: isUserGridError,
     isSuccess: isUserGridLoaded,
   } = useReadContract<
@@ -73,10 +69,7 @@ export function useSmartContract() {
 
   const {
     data: isMemberRes,
-    error: errorLoadingIsMember,
-    isSuccess: isIsMemberLoaded,
     isError: isMemberError,
-    refetch: refetchIsMember,
   } = useReadContract({
     address: BINGO_CONTRACT_ADDRESS,
     abi: BingoABI.abi,
@@ -84,17 +77,12 @@ export function useSmartContract() {
     args: [address],
   });
 
-  const { data: MemberList } = useReadContract({
-    address: BINGO_CONTRACT_ADDRESS,
-    abi: BingoABI.abi,
-    functionName: "getMemberList",
-  });
+  
 
   const {
     data: bingoBoard,
     isFetched: isBingoBoardFetched,
     isLoading: isBingoBoardLoading,
-    isError: isBingoBoardError,
     refetch: refetchBingoBoard,
   } = useReadContract<
     typeof BingoABI.abi, // ← the ABI type, not the value
@@ -111,8 +99,6 @@ export function useSmartContract() {
 
   const {
     data: nftData,
-    isError: isNftError,
-    refetch: refetchNftData,
     isSuccess: isNftLoaded,
   } = useReadContract<
     typeof BingoABI.abi, // ← the ABI type, not the value
@@ -202,6 +188,7 @@ export function useSmartContract() {
   }, [isMemberRes]);
 
   useEffect(() => {
+    //@ts-ignore
     nftData
     if (isConnected) {
       getFormattedGrid();

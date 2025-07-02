@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       args: [spendPermission, signature],
     });
 
-    const approvalReceipt = await publicClient.waitForTransactionReceipt({
+     await publicClient.waitForTransactionReceipt({
       hash: approvalTxnHash,
     });
 
