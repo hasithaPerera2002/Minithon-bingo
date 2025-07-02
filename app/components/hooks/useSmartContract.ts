@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import React from "react";
 import { Address } from "@coinbase/onchainkit/identity";
 import { get } from "http";
+import { log } from "util";
 
 type BingoSquare = {
   text: string;
@@ -31,8 +32,8 @@ type BingoGrid = BingoSquare[][];
 
 const BINGO_CONTRACT_ADDRESS = "0x074b84E49D806fD9912B1AAa1c8FdEe35c15404a";
 export function useSmartContract() {
-  const { writeContract,status } = useWriteContract({
-    mutation:{
+  const { writeContract, status } = useWriteContract({
+    mutation: {
       onSuccess: (data) => {
         refetchUserGrid();
         getFormattedGrid();
@@ -42,11 +43,12 @@ export function useSmartContract() {
         console.error("Transaction failed:", error);
         toast.error("Transaction failed. Please try again.");
       },
-    }
+    },
   });
   const [grid, setGrid] = useState<BingoGrid>([]);
   const { isConnected, address } = useAccount();
   const [isMember, setIsMember] = useState<boolean>(false);
+  const [nftUrl, setNftUrl] = useState<string>("");
 
   // Read contract data
   const {
@@ -57,17 +59,16 @@ export function useSmartContract() {
     isSuccess: isUserGridLoaded,
   } = useReadContract<
     typeof BingoABI.abi,
-    "getUserBingoBoard", 
-    [number], 
-    Config, 
+    "getUserBingoBoard",
+    [number],
+    Config,
     boolean[]
   >({
     address: BINGO_CONTRACT_ADDRESS,
     abi: BingoABI.abi,
     functionName: "getUserBingoBoard",
     args: [0],
-    account: address, 
-    
+    account: address,
   });
 
   const {
@@ -108,6 +109,25 @@ export function useSmartContract() {
     args: [0],
   });
 
+  const {
+    data: nftData,
+    isError: isNftError,
+    refetch: refetchNftData,
+    isSuccess: isNftLoaded,
+  } = useReadContract<
+    typeof BingoABI.abi, // ← the ABI type, not the value
+    "getUserTokenURI", // ← the exact view fn name
+    [number], // ← your args tuple: [boardIndex]
+    Config, // ← Wagmi’s config generic (can be left as unknown)
+    string
+  >({
+    address: BINGO_CONTRACT_ADDRESS,
+    abi: BingoABI.abi,
+    functionName: "getUserTokenURI",
+    args: [0], 
+    account: address,
+  });
+
   const markSquareOnContract = async (index: number) => {
     try {
       if (!isMember) {
@@ -123,9 +143,8 @@ export function useSmartContract() {
         abi: BingoABI.abi,
         functionName: "markItemCompleted",
         args: [0, index], // userBoardIndex = 0
-        
       });
-      getFormattedGrid(); 
+      getFormattedGrid();
     } catch (error) {
       console.error("Error marking square on contract:", error);
       throw error;
@@ -133,7 +152,6 @@ export function useSmartContract() {
   };
 
   const getFormattedGrid = () => {
-    
     if (!userGrid) {
       refetchUserGrid();
       const formattedGrid: BingoGrid = [];
@@ -154,7 +172,7 @@ export function useSmartContract() {
     } else {
       const formattedGrid: BingoGrid = [];
       console.log("userGrid:", userGrid);
-      
+
       if (bingoBoard?.items) {
         const rowLength = 5;
         for (let i = 0; i < bingoBoard.items.length; i += rowLength) {
@@ -163,7 +181,7 @@ export function useSmartContract() {
             .map((item, idx) => {
               return {
                 text: item.data,
-                marked: userGrid[i+idx],
+                marked: userGrid[i + idx],
                 id: (i + idx).toString(),
               };
             });
@@ -174,7 +192,6 @@ export function useSmartContract() {
     }
   };
   useEffect(() => {
-    
     if (typeof isMemberRes === "boolean") {
       if (isMemberRes) {
         setIsMember(true);
@@ -183,16 +200,21 @@ export function useSmartContract() {
       }
     }
   }, [isMemberRes]);
-  
+
   useEffect(() => {
-    console.log("Checking if user is a member...");
-    
+    nftData
     if (isConnected) {
       getFormattedGrid();
     } else {
       setGrid([]);
     }
-  }, [userGrid, isUserGridLoaded,status]);
+    if (isNftLoaded) {
+      console.log("NFT Data:", nftData);
+      setNftUrl(nftData);
+    } else {
+      setNftUrl("");
+    }
+  }, [userGrid, isUserGridLoaded, status,isNftLoaded]);
   const showToast = () =>
     toast.custom(
       (t) =>
@@ -269,7 +291,6 @@ export function useSmartContract() {
       },
     );
 
-
   return {
     markSquareOnContract,
     isBingoBoardLoading,
@@ -281,5 +302,6 @@ export function useSmartContract() {
     getFormattedGrid,
     isMemberError,
     isUserGridError,
+    nftUrl,
   };
 }

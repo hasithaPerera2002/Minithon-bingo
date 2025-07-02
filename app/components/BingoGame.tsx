@@ -4,8 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { WalletConnection } from "./WalletConnection";
 import { useSmartContract } from "../components/hooks/useSmartContract";
 import { useAccount } from "wagmi";
-import Subscribe from "./Subscribe";
-
+import { downloadFile } from "../../lib/download"; // Adjust the import path as needed
 type BingoSquare = {
   text: string;
   marked: boolean;
@@ -22,6 +21,7 @@ export function BingoGame() {
   const [animatingElements, setAnimatingElements] = useState<string[]>([]);
   const [pulsingSquares, setPulsingSquares] = useState<string[]>([]);
   const [contractGrid, setContractGrid] = useState<BingoGrid | null>(null);
+  const [proxyNftUrl, setProxyNftUrl] = useState<string | null>(null);
 
   const { address, isConnected } = useAccount();
   const {
@@ -32,6 +32,7 @@ export function BingoGame() {
     getFormattedGrid,
     isMemberError,
     isUserGridError,
+    nftUrl
   } = useSmartContract();
 
   // Load grid from smart contract when wallet connects
@@ -42,9 +43,42 @@ export function BingoGame() {
 
   useEffect(() => {
     getFormattedGrid();
+    checkForWins(grid);
   }, [isBingoBoardLoading]);
 
+  useEffect( () => {
+    // Check for wins whenever the grid changes
+    if (grid && grid.length > 0) {
+      checkForWins(grid);
+    } else {
+      console.warn("Grid is empty or not initialized");
+    }
+
+    if(nftUrl) {
+      console.log("NFT URL:", nftUrl);
+      const parts = nftUrl.split("/ipfs/");
+      const imageCid = parts[1];
+      console.log("Image CID:", imageCid);
+
+      // Replace these with your CID and desired output path:
+      const OUTPUT_PATH = "./public/images/nfts/badge.png";
+
+      downloadFile(imageCid, OUTPUT_PATH);
+    }
+  
+   
+  }, [grid])
+  
+
   const checkForWins = useCallback((currentGrid: BingoGrid) => {
+    console.log("Checking for wins...",currentGrid);
+
+    if (!currentGrid || currentGrid.length === 0) {
+      console.warn("Grid is empty or not initialized");
+      return;
+    }
+
+
     const newCompletedRows: number[] = [];
     const newCompletedCols: number[] = [];
     const newCompletedDiagonals: string[] = [];
@@ -134,18 +168,19 @@ export function BingoGame() {
       }, 3000);
     }
   }, []);
-
   const markSquare = async (row: number, col: number, id: number) => {
     if (grid[row][col].marked) return;
-
+    checkForWins(grid);
     // If wallet is connected, interact with smart contract
     if (isConnected && address) {
       try {
-        console.log(`Marking square on contract: row ${row}, col ${col}, id ${id}`);
+        console.log(
+          `Marking square on contract: row ${row}, col ${col}, id ${id}`,
+        );
         await markSquareOnContract(id);
 
         // Reload grid from contract after successful transaction
-         getFormattedGrid();
+        getFormattedGrid();
       } catch (error) {
         console.error("Failed to mark square on contract:", error);
         // Fall back to local state update if contract call fails
@@ -154,7 +189,6 @@ export function BingoGame() {
     } else {
       // Update local state if wallet not connected
       updateLocalGrid(row, col);
-      
     }
   };
 
@@ -248,11 +282,11 @@ export function BingoGame() {
           </div>
 
           {/* Wallet Connection */}
-          {(
+          {
             <div className="mb-8 z-10 relative">
               <WalletConnection />
             </div>
-          )}
+          }
 
           {/* Connection Status */}
           {isConnected && (
@@ -268,7 +302,7 @@ export function BingoGame() {
             </div>
           )}
           {/* spend permissions */}
-          
+
           {isBingoBoardLoading && (
             <div className="flex justify-center mb-4">
               <div className="mb-4 p-4 bg-blue-500/20 backdrop-blur-md max-w-[30vw]  rounded-xl border border-blue-500/30">
@@ -366,6 +400,17 @@ export function BingoGame() {
                   completedDiagonals.length}
               </div>
             </div>
+            {proxyNftUrl && (
+              <div className="mt-4 pt-4 border-t border-white/20">
+                <div className="bg-green-300 w-48 h-48">
+                  <img
+                    src="/images/nfts/badge.png"
+                    alt="metadata"
+                    className="object-cover h-full w-full"
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
         {/* Game Controls */}
@@ -416,3 +461,5 @@ export function BingoGame() {
     </div>
   );
 }
+
+
