@@ -268,7 +268,7 @@ export function BingoGame() {
           </div>
 
           {/* Wallet Connection */}
-          { isConnected && (
+          { !isConnected && (
             <div className="mb-8 z-10 relative">
               <WalletConnection />
             </div>)
