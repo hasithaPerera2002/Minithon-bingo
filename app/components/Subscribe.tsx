@@ -97,8 +97,8 @@ export default function Subscribe() {
     
     let data;
     try {
-      // @ts-ignore
-      const replacer = (key: string, value: any) => {
+      //@ts-nocheck
+      const replacer = (key: string, value: unknown): unknown => {
         if (typeof value === "bigint") {
           return value.toString();
         }

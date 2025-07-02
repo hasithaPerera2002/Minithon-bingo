@@ -188,8 +188,7 @@ export function useSmartContract() {
   }, [isMemberRes]);
 
   useEffect(() => {
-    //@ts-ignore
-    nftData
+    
     if (isConnected) {
       getFormattedGrid();
     } else {
