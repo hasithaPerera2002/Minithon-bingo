@@ -2,10 +2,11 @@
 
 import { use, useEffect, useState } from "react";
 import { useWriteContract, useReadContract, Config, useAccount } from "wagmi";
-import BingoABI from "../../abi/Bingo.json";
+import BingoABI from "../../../lib/abi/Bingo.json";
 import toast from "react-hot-toast";
 import React from "react";
 import { Address } from "@coinbase/onchainkit/identity";
+import { get } from "http";
 
 type BingoSquare = {
   text: string;
@@ -30,7 +31,19 @@ type BingoGrid = BingoSquare[][];
 
 const BINGO_CONTRACT_ADDRESS = "0x074b84E49D806fD9912B1AAa1c8FdEe35c15404a";
 export function useSmartContract() {
-  const { writeContract } = useWriteContract();
+  const { writeContract,status } = useWriteContract({
+    mutation:{
+      onSuccess: (data) => {
+        refetchUserGrid();
+        getFormattedGrid();
+        console.log("Transaction successful:", data);
+      },
+      onError: (error) => {
+        console.error("Transaction failed:", error);
+        toast.error("Transaction failed. Please try again.");
+      },
+    }
+  });
   const [grid, setGrid] = useState<BingoGrid>([]);
   const { isConnected, address } = useAccount();
   const [isMember, setIsMember] = useState<boolean>(false);
@@ -96,7 +109,6 @@ export function useSmartContract() {
   });
 
   const markSquareOnContract = async (index: number) => {
-    console.log("Marking square on contract:", index);
     try {
       if (!isMember) {
         console.error("User is not a member, cannot mark square.");
@@ -111,6 +123,7 @@ export function useSmartContract() {
         abi: BingoABI.abi,
         functionName: "markItemCompleted",
         args: [0, index], // userBoardIndex = 0
+        
       });
       getFormattedGrid(); 
     } catch (error) {
@@ -120,6 +133,7 @@ export function useSmartContract() {
   };
 
   const getFormattedGrid = () => {
+    
     if (!userGrid) {
       refetchUserGrid();
       const formattedGrid: BingoGrid = [];
@@ -139,7 +153,7 @@ export function useSmartContract() {
       setGrid(formattedGrid);
     } else {
       const formattedGrid: BingoGrid = [];
-      console.log("User Grid:", userGrid);
+      console.log("userGrid:", userGrid);
       
       if (bingoBoard?.items) {
         const rowLength = 5;
@@ -147,7 +161,6 @@ export function useSmartContract() {
           const row: BingoSquare[] = bingoBoard.items
             .slice(i, i + rowLength)
             .map((item, idx) => {
-              console.log("Mapping item:", idx+i, "User Grid:", userGrid[i+idx]);
               return {
                 text: item.data,
                 marked: userGrid[i+idx],
@@ -161,8 +174,7 @@ export function useSmartContract() {
     }
   };
   useEffect(() => {
-    console.log("Checking connection status:", isMemberRes, isMember);
-    console.log("Member List:", MemberList);
+    
     if (typeof isMemberRes === "boolean") {
       if (isMemberRes) {
         setIsMember(true);
@@ -173,12 +185,14 @@ export function useSmartContract() {
   }, [isMemberRes]);
   
   useEffect(() => {
+    console.log("Checking if user is a member...");
+    
     if (isConnected) {
       getFormattedGrid();
     } else {
       setGrid([]);
     }
-  }, [userGrid]);
+  }, [userGrid, isUserGridLoaded,status]);
   const showToast = () =>
     toast.custom(
       (t) =>

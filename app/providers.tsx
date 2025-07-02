@@ -5,13 +5,28 @@ import { base, baseSepolia } from "wagmi/chains";
 import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
 import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider, createConfig, http } from "wagmi";
+import { WagmiProvider, cookieStorage, createConfig, createStorage, http } from "wagmi";
+import { coinbaseWallet } from "wagmi/connectors";
 export function Providers(props: { children: ReactNode }) {
   const config = createConfig({
     chains: [baseSepolia],
     transports: {
       [baseSepolia.id]: http(),
     },
+    connectors: [
+      coinbaseWallet({
+        appName: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
+        preference: process.env.NEXT_PUBLIC_ONCHAINKIT_WALLET_CONFIG as
+          | "smartWalletOnly"
+          | "all",
+        // @ts-ignore
+        keysUrl: "https://keys-dev.coinbase.com/connect",
+      }),
+    ],
+    storage: createStorage({
+      storage: cookieStorage,
+    }),
+    ssr: true,
   });
   const queryClient = new QueryClient();
 

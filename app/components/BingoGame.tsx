@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { WalletConnection } from "./WalletConnection";
 import { useSmartContract } from "../components/hooks/useSmartContract";
 import { useAccount } from "wagmi";
+import Subscribe from "./Subscribe";
 
 type BingoSquare = {
   text: string;
@@ -266,7 +267,12 @@ export function BingoGame() {
               </div>
             </div>
           )}
-
+          {/* spend permissions */}
+          <div className="flex justify-center mb-4">
+            <div className="mb-4 p-4  max-w-[30vw]   rounded-xl ">
+              <Subscribe />
+            </div>
+          </div>
           {isBingoBoardLoading && (
             <div className="flex justify-center mb-4">
               <div className="mb-4 p-4 bg-blue-500/20 backdrop-blur-md max-w-[30vw]  rounded-xl border border-blue-500/30">
@@ -276,18 +282,18 @@ export function BingoGame() {
               </div>
             </div>
           )}
-          {isMemberError  && (
-              <div className="flex justify-center mb-4">
-                <div className="mb-4 p-4 bg-red-500/20 backdrop-blur-md max-w-[30vw] rounded-xl border border-red-500/30">
-                  <p className="text-red-400 font-semibold">
-                    ❌ Error loading membership status
-                  </p>
-                  <p className="text-white/80 text-sm mt-1">
-                    Please refresh or reconnect your wallet.
-                  </p>
-                </div>
+          {isMemberError && (
+            <div className="flex justify-center mb-4">
+              <div className="mb-4 p-4 bg-red-500/20 backdrop-blur-md max-w-[30vw] rounded-xl border border-red-500/30">
+                <p className="text-red-400 font-semibold">
+                  ❌ Error loading membership status
+                </p>
+                <p className="text-white/80 text-sm mt-1">
+                  Please refresh or reconnect your wallet.
+                </p>
               </div>
-            )}
+            </div>
+          )}
         </div>
         {/* Bingo celebration */}
         {isBingo && (
@@ -315,10 +321,14 @@ export function BingoGame() {
                     <div
                       key={square.id}
                       className={getSquareClasses(rowIndex, colIndex, square)}
-                      onClick={() => markSquare(rowIndex, colIndex, Number(square.id))}
+                      onClick={() =>
+                        markSquare(rowIndex, colIndex, Number(square.id))
+                      }
                     >
                       <span className="relative z-10 text-center text-xs leading-tight">
-                        {square.text}{square.marked }{square.id}
+                        {square.text}
+                        {square.marked}
+                        {square.id}
                       </span>
 
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-full group-hover:animate-shimmer"></div>
