@@ -5,7 +5,13 @@ import { base, baseSepolia } from "wagmi/chains";
 import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
 import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider, cookieStorage, createConfig, createStorage, http } from "wagmi";
+import {
+  WagmiProvider,
+  cookieStorage,
+  createConfig,
+  createStorage,
+  http,
+} from "wagmi";
 import { coinbaseWallet } from "wagmi/connectors";
 export function Providers(props: { children: ReactNode }) {
   const config = createConfig({
@@ -35,7 +41,7 @@ export function Providers(props: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <MiniKitProvider
           apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-          chain={base}
+          chain={baseSepolia}
           config={{
             appearance: {
               mode: "auto",

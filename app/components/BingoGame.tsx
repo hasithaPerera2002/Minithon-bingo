@@ -248,7 +248,7 @@ export function BingoGame() {
           </div>
 
           {/* Wallet Connection */}
-          {!isConnected && (
+          {(
             <div className="mb-8 z-10 relative">
               <WalletConnection />
             </div>
@@ -268,11 +268,7 @@ export function BingoGame() {
             </div>
           )}
           {/* spend permissions */}
-          <div className="flex justify-center mb-4">
-            <div className="mb-4 p-4  max-w-[30vw]   rounded-xl ">
-              <Subscribe />
-            </div>
-          </div>
+          
           {isBingoBoardLoading && (
             <div className="flex justify-center mb-4">
               <div className="mb-4 p-4 bg-blue-500/20 backdrop-blur-md max-w-[30vw]  rounded-xl border border-blue-500/30">

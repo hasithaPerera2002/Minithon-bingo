@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPublicClient, getSpenderWalletClient } from "../../lib/spender";
+import { getPublicClient, getSpenderWalletClient } from "../../../lib/spender";
 import {
   spendPermissionManagerAbi,
   spendPermissionManagerAddress,
-} from "../../lib/abi/SpendPermissionManager";
+} from "../../../lib/abi/SpendPermissionManager";
 
 export async function POST(request: NextRequest) {
   const spenderBundlerClient = await getSpenderWalletClient();
@@ -11,6 +11,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { spendPermission, signature } = body;
+    console.log("Received spendPermission:", spendPermission);
+    console.log("Received signature:", signature);
 
     const approvalTxnHash = await spenderBundlerClient.writeContract({
       address: spendPermissionManagerAddress,

@@ -49,7 +49,7 @@ export default function Subscribe() {
       account: accountAddress, // User wallet address
       spender: process.env.NEXT_PUBLIC_SPENDER_ADDRESS! as Address, // Spender smart contract wallet address
       token: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address, // ETH (https://eips.ethereum.org/EIPS/eip-7528)
-      allowance: parseUnits("10", 18),
+      allowance: parseUnits("0.1", 18),
       period: 86400, // seconds in a day
       start: 0, // unix timestamp
       end: 281474976710655, // max uint48
@@ -58,6 +58,8 @@ export default function Subscribe() {
     };
 
     try {
+      console.log("chainId", chainId);
+      
       const signature = await signTypedDataAsync({
         domain: {
           name: "Spend Permission Manager",
@@ -91,6 +93,8 @@ export default function Subscribe() {
 
   async function handleCollectSubscription() {
     setIsDisabled(true);
+    console.log('spendPermission', spendPermission);
+    
     let data;
     try {
       const replacer = (key: string, value: any) => {
@@ -99,7 +103,7 @@ export default function Subscribe() {
         }
         return value;
       };
-      const response = await fetch("/collect", {
+      const response = await fetch("/api/collect", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
