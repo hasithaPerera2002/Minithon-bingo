@@ -268,10 +268,10 @@ export function BingoGame() {
           </div>
 
           {/* Wallet Connection */}
-          {
+          { isConnected && (
             <div className="mb-8 z-10 relative">
               <WalletConnection />
-            </div>
+            </div>)
           }
 
           {/* Connection Status */}
