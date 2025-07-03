@@ -280,7 +280,9 @@ export function BingoGame() {
             <div className="flex justify-center mb-4">
               <div className="mb-4 p-4 bg-green-500/20 backdrop-blur-md w-full max-w-md rounded-xl border border-green-500/30">
                 <p className="text-green-400 font-semibold">
-                  🔗 Connected to Base Network
+                  <span className=" text-xs text-white/70 bg-black/30 px-2 py-1 rounded-lg">
+                    {address?.slice(0, 6)}...{address?.slice(-4)}
+                  </span>
                 </p>
                 {nftUrl ? (
                   <p className="text-white/80 text-sm mt-1">
