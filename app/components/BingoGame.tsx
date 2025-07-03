@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { WalletConnection } from "./WalletConnection";
 import { useSmartContract } from "../components/hooks/useSmartContract";
 import { useAccount } from "wagmi";
+import Subscribe from "./Subscribe";
 type BingoSquare = {
   text: string;
   marked: boolean;
@@ -268,6 +269,12 @@ export function BingoGame() {
             </div>
           )}
 
+          {isConnected && (
+            <div className="mb-8 z-10 flex justify-center  relative">
+             <Subscribe />
+            </div>
+          )}
+
           {/* Connection Status */}
           {isConnected && (
             <div className="flex justify-center mb-4">
@@ -354,9 +361,7 @@ export function BingoGame() {
                       >
                         <span className="relative z-10 text-center text-[7.5px] lg:text-[12px] leading-tight">
                           {square.text}
-                          
                         </span>
-
                       </div>
                     )),
                   )}
