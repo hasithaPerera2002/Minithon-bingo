@@ -354,8 +354,7 @@ export function BingoGame() {
                       >
                         <span className="relative z-10 text-center text-[7.5px] lg:text-[12px] leading-tight">
                           {square.text}
-                          {square.marked}
-                          {square.id}
+                          
                         </span>
 
                       </div>
