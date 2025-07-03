@@ -11,7 +11,7 @@ import {
   createStorage,
   http,
 } from "wagmi";
-import { coinbaseWallet } from "wagmi/connectors";
+import { coinbaseWallet, metaMask } from "wagmi/connectors";
 import { farcasterMiniApp as miniAppConnector } from "@farcaster/miniapp-wagmi-connector";
 
 export function Providers(props: { children: ReactNode }) {
@@ -32,6 +32,7 @@ export function Providers(props: { children: ReactNode }) {
             // @ts-expect-error because wagmi types are not updated yet
             keysUrl: "https://keys-dev.coinbase.com/connect",
           }),
+          metaMask(),
         ];
 
     const cfg = createConfig({
@@ -47,27 +48,27 @@ export function Providers(props: { children: ReactNode }) {
     setConfig(cfg);
   }, []);
 
-  if (!config) return null; 
+  if (!config) return null;
   const queryClient = new QueryClient();
 
   return (
     <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          <MiniKitProvider
-            apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-            chain={baseSepolia}
-            config={{
-              appearance: {
-                mode: "auto",
-                theme: "mini-app-theme",
-                name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
-                logo: process.env.NEXT_PUBLIC_ICON_URL,
-              },
-            }}
-          >
-            {props.children}
-          </MiniKitProvider>
-        </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <MiniKitProvider
+          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+          chain={baseSepolia}
+          config={{
+            appearance: {
+              mode: "auto",
+              theme: "mini-app-theme",
+              name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
+              logo: process.env.NEXT_PUBLIC_ICON_URL,
+            },
+          }}
+        >
+          {props.children}
+        </MiniKitProvider>
+      </QueryClientProvider>
     </WagmiProvider>
   );
 }
