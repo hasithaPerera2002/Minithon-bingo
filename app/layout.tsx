@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "Bingooo",
       images: [
         {
-          url: `${URL}/hero.png`,
+          url: `${URL}/og.png`,
           width: 1200,
           height: 630,
           alt: "Bingooo - Fill the tiles and win the NFT",
@@ -34,12 +34,12 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: "Bingooo",
       description: "Fill the tiles and win the NFT",
-      images: [`${URL}/hero.png`],
+      images: [`${URL}/og.png`],
     },
     other: {
       "fc:frame": JSON.stringify({
         version: "next",
-        imageUrl: `${URL}/hero.png`,
+        imageUrl: `${URL}/og.png`,
         button: {
           title: "Open Bingooo 🎉",
           action: {
