@@ -19,7 +19,7 @@ export function BingoGame() {
   const [isBingo, setIsBingo] = useState(false);
   const [animatingElements, setAnimatingElements] = useState<string[]>([]);
   const [pulsingSquares, setPulsingSquares] = useState<string[]>([]);
-  
+
   const { address, isConnected } = useAccount();
   const {
     markSquareOnContract,
@@ -28,7 +28,7 @@ export function BingoGame() {
     setGrid,
     getFormattedGrid,
     isMemberError,
-    nftUrl
+    nftUrl,
   } = useSmartContract();
 
   // Load grid from smart contract when wallet connects
@@ -42,28 +42,22 @@ export function BingoGame() {
     checkForWins(grid);
   }, [isBingoBoardLoading]);
 
-  useEffect( () => {
+  useEffect(() => {
     // Check for wins whenever the grid changes
     if (grid && grid.length > 0) {
       checkForWins(grid);
     } else {
       console.warn("Grid is empty or not initialized");
     }
-
-   
-  
-   
-  }, [grid])
-  
+  }, [grid]);
 
   const checkForWins = useCallback((currentGrid: BingoGrid) => {
-    console.log("Checking for wins...",currentGrid);
+    console.log("Checking for wins...", currentGrid);
 
     if (!currentGrid || currentGrid.length === 0) {
       console.warn("Grid is empty or not initialized");
       return;
     }
-
 
     const newCompletedRows: number[] = [];
     const newCompletedCols: number[] = [];
@@ -194,7 +188,7 @@ export function BingoGame() {
 
   const getSquareClasses = (row: number, col: number, square: BingoSquare) => {
     const baseClasses =
-      "relative w-24 h-24 border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all duration-500 ease-in-out transform hover:scale-110 hover:shadow-xl hover:z-10 p-1";
+      "relative w-[3.5rem] h-[3.5rem] sm:w-24 sm:h-24 border-2 flex items-center justify-center text-[5px] sm:text-xs font-bold cursor-pointer transition-all duration-500 ease-in-out transform hover:scale-110 hover:shadow-xl hover:z-10 p-1";
 
     let classes = baseClasses;
     const squareId = `${row}-${col}`;
@@ -245,7 +239,7 @@ export function BingoGame() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center justify-start p-4 overflow-x-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full opacity-20 animate-pulse"></div>
@@ -256,10 +250,10 @@ export function BingoGame() {
       <div className="relative z-10 max-w-4xl w-full">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 mb-6 animate-pulse">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 mb-6 animate-pulse">
             WEB3 BINGO
           </h1>
-          <div className="flex justify-center space-x-12 text-4xl font-bold mb-6">
+          <div className="flex justify-center space-x-3 sm:space-x-8 text-2xl sm:text-4xl font-bold mb-6">
             <span className="text-red-400 animate-bounce delay-100">B</span>
             <span className="text-orange-400 animate-bounce delay-200">I</span>
             <span className="text-yellow-400 animate-bounce delay-300">N</span>
@@ -268,16 +262,16 @@ export function BingoGame() {
           </div>
 
           {/* Wallet Connection */}
-          { !isConnected && (
+          {!isConnected && (
             <div className="mb-8 z-10 relative">
               <WalletConnection />
-            </div>)
-          }
+            </div>
+          )}
 
           {/* Connection Status */}
           {isConnected && (
             <div className="flex justify-center mb-4">
-              <div className="mb-4 p-4 bg-green-500/20 backdrop-blur-md max-w-[30vw]   rounded-xl border border-green-500/30">
+              <div className="mb-4 p-4 bg-green-500/20 backdrop-blur-md w-full max-w-md rounded-xl border border-green-500/30">
                 <p className="text-green-400 font-semibold">
                   🔗 Connected to Base Network
                 </p>
@@ -307,7 +301,7 @@ export function BingoGame() {
 
           {isBingoBoardLoading && (
             <div className="flex justify-center mb-4">
-              <div className="mb-4 p-4 bg-blue-500/20 backdrop-blur-md max-w-[30vw]  rounded-xl border border-blue-500/30">
+              <div className="mb-4 p-4 bg-blue-500/20 backdrop-blur-md w-full max-w-md  rounded-xl border border-blue-500/30">
                 <p className="text-blue-400 font-semibold">
                   ⏳ Processing blockchain transaction...
                 </p>
@@ -316,7 +310,7 @@ export function BingoGame() {
           )}
           {isMemberError && (
             <div className="flex justify-center mb-4">
-              <div className="mb-4 p-4 bg-red-500/20 backdrop-blur-md max-w-[30vw] rounded-xl border border-red-500/30">
+              <div className="mb-4 p-4 bg-red-500/20 backdrop-blur-md w-full max-w-md rounded-xl border border-red-500/30">
                 <p className="text-red-400 font-semibold">
                   ❌ Error loading membership status
                 </p>
@@ -347,26 +341,27 @@ export function BingoGame() {
         {isConnected && (
           <div className="flex justify-center mb-8">
             <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
-              <div className="grid grid-cols-5 gap-3 p-4">
-                {grid.map((row, rowIndex) =>
-                  row.map((square, colIndex) => (
-                    <div
-                      key={square.id}
-                      className={getSquareClasses(rowIndex, colIndex, square)}
-                      onClick={() =>
-                        markSquare(rowIndex, colIndex, Number(square.id))
-                      }
-                    >
-                      <span className="relative z-10 text-center text-xs leading-tight">
-                        {square.text}
-                        {square.marked}
-                        {square.id}
-                      </span>
+              <div className="overflow-auto max-w-full">
+                <div className="grid grid-cols-5 gap-2 sm:gap-3 p-1 sm:p-4 min-w-[320px] sm:min-w-0">
+                  {grid.map((row, rowIndex) =>
+                    row.map((square, colIndex) => (
+                      <div
+                        key={square.id}
+                        className={getSquareClasses(rowIndex, colIndex, square)}
+                        onClick={() =>
+                          markSquare(rowIndex, colIndex, Number(square.id))
+                        }
+                      >
+                        <span className="relative z-10 text-center text-[7.5px] lg:text-[12px] leading-tight">
+                          {square.text}
+                          {square.marked}
+                          {square.id}
+                        </span>
 
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-full group-hover:animate-shimmer"></div>
-                    </div>
-                  )),
-                )}
+                      </div>
+                    )),
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -452,5 +447,3 @@ export function BingoGame() {
     </div>
   );
 }
-
-

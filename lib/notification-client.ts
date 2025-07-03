@@ -1,4 +1,4 @@
-import {
+import sdk, {
   FrameNotificationDetails,
   type SendNotificationRequest,
   sendNotificationResponseSchema,
@@ -27,6 +27,8 @@ export async function sendFrameNotification({
   body: string;
   notificationDetails?: FrameNotificationDetails | null;
 }): Promise<SendFrameNotificationResult> {
+
+  await sdk.actions.ready();
   if (!notificationDetails) {
     notificationDetails = await getUserNotificationDetails(fid);
   }
