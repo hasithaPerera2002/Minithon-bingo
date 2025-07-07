@@ -10,12 +10,13 @@ import {
   createConfig,
   createStorage,
   http,
+  type Config as WagmiConfig,
 } from "wagmi";
-import { coinbaseWallet, metaMask } from "wagmi/connectors";
+import { coinbaseWallet } from "wagmi/connectors";
 import { farcasterMiniApp as miniAppConnector } from "@farcaster/miniapp-wagmi-connector";
 
 export function Providers(props: { children: ReactNode }) {
-  const [config, setConfig] = useState<any | null>(null);
+  const [config, setConfig] = useState<WagmiConfig | null>(null);
 
   useEffect(() => {
     const isInFarcaster =
@@ -32,7 +33,6 @@ export function Providers(props: { children: ReactNode }) {
             // @ts-expect-error because wagmi types are not updated yet
             keysUrl: "https://keys-dev.coinbase.com/connect",
           }),
-          metaMask(),
         ];
 
     const cfg = createConfig({

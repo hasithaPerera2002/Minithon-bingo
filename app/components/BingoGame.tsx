@@ -34,7 +34,7 @@ export function BingoGame() {
 
   // Load grid from smart contract when wallet connects
   useEffect(() => {
-    if (isConnected && address) {
+    if (address) {
     }
   }, [address]);
 
